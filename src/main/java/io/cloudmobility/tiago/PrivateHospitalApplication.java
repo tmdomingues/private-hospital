@@ -1,0 +1,13 @@
+package io.cloudmobility.tiago;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+
+@SpringBootApplication
+@EnableSpringDataWebSupport
+public class PrivateHospitalApplication {
+    public static void main(final String[] args) {
+        SpringApplication.run(PrivateHospitalApplication.class, args);
+    }
+}
