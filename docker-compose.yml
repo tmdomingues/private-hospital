@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: hospital-db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: hospital
+      POSTGRES_PASSWORD: pa33w0rd
+    ports:
+      - 5432:5432
+    volumes:
+      - hospital-stuff
+      - ./docker/postgresql/:/docker-entrypoint-initdb.d
+    networks:
+      - hospital-network
+
+  cloudmobility-hospital:
+    container_name: cloudmobility-hospital
+    depends_on:
+      - postgres
+    build:
+      context: .
+    image: tiagomsdomingues/cloudmobility-hospital:latest
+    environment:
+      DATABASE: postgres
+    ports:
+      - 8080:8080
+    networks:
+      - hospital-network
+
+volumes:
+  hospital-stuff:
+
+networks:
+  hospital-network:
+    name: hospital-network
+    driver: bridge
