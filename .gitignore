@@ -36,3 +36,8 @@ build/
 *.class
 *.class
 *.class
+*.jar
+.mvn/wrapper/maven-wrapper.properties
+.mvn/wrapper/MavenWrapperDownloader.java
+mvnw
+mvnw.cmd
