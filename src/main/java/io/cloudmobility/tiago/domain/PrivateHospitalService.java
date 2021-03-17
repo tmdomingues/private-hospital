@@ -1,6 +1,5 @@
 package io.cloudmobility.tiago.domain;
 
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -202,8 +201,9 @@ public class PrivateHospitalService {
         final var doctor = doctorRepository.findById(doctorId).orElseThrow();
         final var slots = absenceRepository.findAbsencesByDoctorForGivenPeriod(doctor, absenceRequesDto.getFrom(), absenceRequesDto.getTo());
 
+        // TODO Revisit existing absence scheduling
         if (!slots.isEmpty()) {
-            throw new IllegalArgumentException("Defined time off overlaps with existing period...Choose another available slot");
+            throw new IllegalArgumentException("Defined time off overlaps with existing period");
         }
     }
 
