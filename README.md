@@ -20,9 +20,30 @@ The service exposes a RESTful API to answer the following questions:
    To stop the application run *docker-compose down* (with flag -v if we want to erase the database's persistent storage also).
 
 3. The application already comes with some dummy data to test it (doctors and patients).
-Check the file under **./docker/private_hospital_init_data.sql** to have data for experimenting the app.
 
 4. Use the application's through the REST API located at ---> [Private-Hospital Swagger API](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/)
+
+## How to use
+1.
+
+2.
+
+3.
+
+#### Tested scenarios for business rules
+GET /v1/hospital/doctors/{id}/appointments :white_check_mark:
+
+GET /v1/hospital/doctors/{id}/availability :white_check_mark:
+
+POST /doctors/{id}/absences
+
+#### Tested scenarios for security
+
+**Doctor** - Can perform all operation except scheduling appointments (a patient operation)
+
+**Patient** - Can perform only the scheduling of appointments, listing doctors availability and listing doctors
+
+Deviations from these rules should return HTTP 403 (Forbidden)
 
 
 ## Considerations & Improvements
