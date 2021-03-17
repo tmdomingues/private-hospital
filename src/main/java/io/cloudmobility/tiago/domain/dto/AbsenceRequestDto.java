@@ -3,7 +3,13 @@ package io.cloudmobility.tiago.domain.dto;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -14,12 +20,12 @@ import lombok.Data;
 @Schema(name = "AbsenceRequest", description = "Request for setting time off for a given doctor")
 public class AbsenceRequestDto {
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    @Schema(description = "Start of absence", type = "string", example = "2021-03-09 17:00")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Schema(description = "Start of absence", type = "string", example = "2021-03-09T17:00")
     private LocalDateTime from;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    @Schema(description = "End of absence", type = "string", example = "2021-03-09 19:00")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Schema(description = "End of absence", type = "string", example = "2021-03-09T19:00")
     private LocalDateTime to;
 
     @Schema(description = "Motive of the absence", example = "Personal business")

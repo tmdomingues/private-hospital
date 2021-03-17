@@ -12,8 +12,8 @@ public class AbsenceConverter implements Converter<AbsenceRequestDto, Absence> {
 
     @Override
     public Absence convert(final AbsenceRequestDto absenceDto) {
-        final Absence absence = new Absence();
 
+        final Absence absence = new Absence();
         absence.setReason(absenceDto.getReason());
         absence.setStartPeriod(absenceDto.getFrom());
         absence.setEndPeriod(absenceDto.getTo());
