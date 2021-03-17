@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <springdoc-openapi.version>1.5.3</springdoc-openapi.version>
+        <springdoc-openapi.version>1.5.5</springdoc-openapi.version>
         <hibernate-types.version>2.10.2</hibernate-types.version>
 
         <deploy.path>v1</deploy.path>
@@ -55,13 +55,18 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <artifactId>springdoc-openapi-security</artifactId>
             <version>${springdoc-openapi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.16</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
         </dependency>
 
         <dependency>
@@ -100,6 +105,14 @@
             <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.graphaware</groupId>
+            <artifactId>pizzeria</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
