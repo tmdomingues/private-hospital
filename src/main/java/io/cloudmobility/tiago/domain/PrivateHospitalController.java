@@ -20,10 +20,6 @@ import io.cloudmobility.tiago.domain.model.Absence;
 import io.cloudmobility.tiago.domain.model.Appointment;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,7 +103,7 @@ public class PrivateHospitalController {
         return privateHospitalService.scheduleAppointment(id, doctorId, initDate, endDate, description);
     }
 
-    /** Bonus endpoint for conveniency of testing */
+    /** Bonus endpoint for conveniency of testing. */
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("/doctors")

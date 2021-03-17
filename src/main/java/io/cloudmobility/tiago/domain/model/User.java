@@ -2,9 +2,10 @@ package io.cloudmobility.tiago.domain.model;
 
 
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-
 
 import io.cloudmobility.tiago.security.UserRole;
 import lombok.Getter;
