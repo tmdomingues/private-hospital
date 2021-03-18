@@ -1,4 +1,4 @@
-# The Challenge (WIP)
+# The Challenge
 
 In this challenge you are asked to develop a backend service to book medical appointments
 for a private hospital. The users of this system are the doctors and the patients. The
