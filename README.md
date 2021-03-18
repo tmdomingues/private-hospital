@@ -20,7 +20,7 @@ The service exposes a RESTful API to answer the following questions:
    
 To stop the application run *docker-compose down* (with flag -v if we want to erase the database's persistent storage also).
 
-3. The application already is pre loaded with some dummy data (doctors and patients).
+3. The application is already pre loaded with some dummy data (doctors and patients).
 
 4. Use the application's through the REST API located at ---> [Private-Hospital Swagger API](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/)
 
@@ -55,7 +55,7 @@ As a doctor :man_health_worker::
 
 2. Set an absence for a given period: POST /v1/hospital/doctors/{id}/absences :white_check_mark:
 
-*Note:* All the scenarios above were tested successfully, even on the trickier settings i could think of.
+*Note:* All the scenarios above were tested successfully, even on the trickier cases i could think of.
 There were some decisions i made thinking probably when plugging it to a frontend(e.g. i limited the patients to check availabilities in periods of a week)
 
 ### Tested scenarios for security roles
@@ -71,10 +71,9 @@ doctor |  POST /v1/hospital/doctors/{id}/absences
 and requests with incorrect permissions will result in HTTP 403(Forbidden). 
 
 ## Considerations & Improvements
-The overall design of the application has left me satisfied, there are traces of some experiments which can be easily 
-refactored and improved, and the main focus, more than using a lot of tools was the correctness of the app itself first.
-I think I pretty much covered all the topics proposed in the challenge (if not do let me know), except diving deeper into metrics which for a spring boot app would be only 
-configuration and another service on a docker-compose(Elastic, Prometheus, etc...) and connecting them.
+The overall design of the application has left me satisfied, there are traces of some experiments which can easily 
+be refactored and improved, but my main focus was the always correctness of the app itself first.
+I think I pretty much covered all the topics proposed in the challenge (if not do let me know), except diving deeper into metrics which for a spring boot app would be only configurations and another service on a docker-compose (Elastic, Prometheus, etc...) and connecting them. 
 
 Positive points:
 - Code cleanliness (i hope)
