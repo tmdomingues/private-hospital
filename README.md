@@ -27,7 +27,7 @@ To stop the application run *docker-compose down* (with flag -v if we want to er
 ## How to use
 1. To start using the API the user must obtain a Jwt token on the Authentication section invoking
    
-   *POST /authenticate*
+   POST /authenticate
 
 2. For simplicity in obtaining the token and respective usage of the API two users/passwords were hardcoded (in a real
    world scenario they would simply be stored on a database with their respective passwords hashed.) 
@@ -48,22 +48,23 @@ There are 4 patients and 3 doctors on the initial data.
 As a patient :mage_woman::
 1. Scheduled an appointment: POST /v1/hospital/patients/{id}/appointments
 
-2. Checked the availability of the doctor excludes my appointment(s) and his absences: GET /v1/hospital/doctors/{id}/availability :white_check_mark:
+2. Checked doctor's availability: GET /v1/hospital/doctors/{id}/availability :white_check_mark:
 
 As a doctor :man_health_worker::
 1. Checked the appointments for a given period: GET /v1/hospital/doctors/{id}/appointments :white_check_mark:
 
 2. Set an absence for a given period: POST /v1/hospital/doctors/{id}/absences :white_check_mark:
 
+*Note:* All the scenarios above were tested successfully, even on the trickier settings i could think of.
 
 ### Tested scenarios for security roles
 
 User | Operation
 ------------ | -------------
-patient | *POST /v1/hospital/patients/{id}/appointments*
-patient | *GET /v1/hospital/doctors/{id}/availability*
-doctor | *GET /v1/hospital/doctors/{id}/appointments*
-doctor | *POST /v1/hospital/doctors/{id}/absences*
+patient | POST /v1/hospital/patients/{id}/appointments
+patient | GET /v1/hospital/doctors/{id}/availability
+doctor |  GET /v1/hospital/doctors/{id}/appointments
+doctor |  POST /v1/hospital/doctors/{id}/absences
 
 **Note**: Unauthenticated requests will result in HTTP 401(Unauthorized)
 and requests with incorrect permissions will result in HTTP 403(Forbidden). 
