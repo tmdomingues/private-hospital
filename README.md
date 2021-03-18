@@ -14,7 +14,7 @@ The service exposes a RESTful API to answer the following questions:
    vacation, sick, etc...)
 
 ## How to run locally:
-1. The application requires maven and Java 11 to be installed (and set as JAVA_HOME). In the root of the project execute: *./mvnw clean package*
+1. The application requires [Java11](https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_osx-x64_bin.tar.gz) to be installed (and also set as JAVA_HOME). In the root of the project execute: *./mvnw clean package*
 
 2. The application also requires docker to be installed locally. Also on the root of the project start up docker-compose with *docker-compose up --build -d*. 
    
@@ -89,6 +89,7 @@ To improve/objects of possible criticism:
 - The pagination used on some endpoints on an ideal scenario would be done on a database but here I wanted the logic on the code so not really a negative.
   (Also I kept the number objects used to an insignificant value so no harm would storm the JVM memory wise).  
 - Usage of a database-migration tool like Flyway or Liquibase but not really critical for the purpose of the exercise. 
+- Docker image can be improved to be even easier to install the image (e.g. an image with java 11 doing the all the mvn phases).
 
 
 Let me have your feedback on what needs more improvement. Thanks for the challenge...:thumbsup:
