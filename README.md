@@ -14,37 +14,80 @@ The service exposes a RESTful API to answer the following questions:
    vacation, sick, etc...)
 
 ## How to run locally:
-1. The application requires maven and Java 11 to be installed. In the root of the project perform *mvn clean install*
+1. The application requires maven and Java 11 to be installed (and set as JAVA_HOME). In the root of the project execute: *./mvnw clean package*
 
-2. The application also requires docker to be installed locally. Start up docker-compose with *docker-compose up*, check optional flags like --detach if desired. 
-   To stop the application run *docker-compose down* (with flag -v if we want to erase the database's persistent storage also).
+2. The application also requires docker to be installed locally. Also on the root of the project start up docker-compose with *docker-compose up --build -d*. 
+   
+To stop the application run *docker-compose down* (with flag -v if we want to erase the database's persistent storage also).
 
-3. The application already comes with some dummy data to test it (doctors and patients).
+3. The application already is pre loaded with somy dummy data (doctors and patients).
 
 4. Use the application's through the REST API located at ---> [Private-Hospital Swagger API](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/)
 
 ## How to use
-1.
+1. To start using the API the user must obtain a Jwt token on the Authentication section invoking
+   
+   *POST /authenticate*
 
-2.
+2. For simplicity in obtaining the token and respective usage of the API two users/passwords were hardcoded (in a real
+   world scenario they would simply be stored on a database with their respective passwords hashed.) 
 
-3.
+   Username | Password
+   ------------ | -------------
+   patient | password
+   doctor | password
 
-#### Tested scenarios for business rules
-GET /v1/hospital/doctors/{id}/appointments :white_check_mark:
+3. After copying the *jwtToken* from the response payload, be sure to paste it on authentication mechanism to login.
 
-GET /v1/hospital/doctors/{id}/availability :white_check_mark:
+3. Play with the API and have fun. :muscle:
 
-POST /doctors/{id}/absences
 
-#### Tested scenarios for security
+### Tested scenarios for business rules
+There are 4 patients and 3 doctors on the initial data.
 
-**Doctor** - Can perform all operation except scheduling appointments (a patient operation)
+As a patient :mage_woman::
+1. Scheduled an appointment: POST /v1/hospital/patients/{id}/appointments
 
-**Patient** - Can perform only the scheduling of appointments, listing doctors availability and listing doctors
+2. Checked the availability of the doctor excludes my appointment(s) and his absences: GET /v1/hospital/doctors/{id}/availability :white_check_mark:
 
-Deviations from these rules should return HTTP 403 (Forbidden)
+As a doctor :man_health_worker::
+1. Checked the appointments for a given period: GET /v1/hospital/doctors/{id}/appointments :white_check_mark:
 
+2. Set an absence for a given period: POST /v1/hospital/doctors/{id}/absences :white_check_mark:
+
+
+### Tested scenarios for security roles
+
+User | Operation
+------------ | -------------
+patient | *POST /v1/hospital/patients/{id}/appointments*
+patient | *GET /v1/hospital/doctors/{id}/availability*
+doctor | *GET /v1/hospital/doctors/{id}/appointments*
+doctor | *POST /v1/hospital/doctors/{id}/absences*
+
+**Note**: Unauthenticated requests will result in HTTP 401(Unauthorized)
+and requests with incorrect permissions will result in HTTP 403(Forbidden). 
 
 ## Considerations & Improvements
-(...)
+The overall design of the application has left me satisfied, there are traces of some experiments which can be easily 
+refactored and improved, and the main focus, more than using a lot of tools was the correctness of the app itself first.
+I think I pretty much covered all the topics proposed in the challenge (if not do let me know), except diving deeper into metrics which for a spring boot app would be only 
+configuration and another service on a docker-compose(Elastic, Prometheus, etc...) and connecting them.
+
+Positive points:
+- Code cleanliness (i hope)
+- Modular approach
+- API design
+- Enforced best practices (checkstyle)
+- Scalable database design
+
+To improve/objects of possible criticism:
+- Additional test coverage (although some I left out due to lack of time and the most important aspects for me are tested)
+- Consistency on some code blocks, although not troublesome and are easily fixed (e.g. Dto's and entities, but nothing critical.)
+- The pagination used on some endpoints on an ideal scenario would be done on a database but here I wanted the logic on the code so not really a negative.
+  (Also I kept the number objects used to an insignificant value so no harm would storm the JVM memory wise).  
+- Usage of a database-migration tool like Flyway or Liquibase but not really critical for the purpose of the exercise. 
+
+
+Let me have your feedback on what needs more improvement. Thanks for the challenge...:thumbsup:
+
