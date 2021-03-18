@@ -43,7 +43,7 @@ To stop the application run *docker-compose down* (with flag -v if we want to er
 
 
 ### Tested scenarios for business rules
-There are 4 patients and 3 doctors on the initial data.
+There are 4 patients and 3 doctors on the initial data. (the first has id=1 and so on)
 
 As a patient :mage_woman::
 1. Scheduled an appointment: POST /v1/hospital/patients/{id}/appointments
@@ -78,8 +78,8 @@ configuration and another service on a docker-compose(Elastic, Prometheus, etc..
 Positive points:
 - Code cleanliness (i hope)
 - Modular approach
-- API design
-- Enforced best practices (checkstyle)
+- A Restful API design best practices (not HATEOAS, but consistent)
+- Enforced best practices for code quality (checkstyle)
 - Scalable database design
 
 To improve/objects of possible criticism:
