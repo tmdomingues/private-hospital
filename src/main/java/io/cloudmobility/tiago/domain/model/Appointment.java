@@ -21,11 +21,11 @@ public class Appointment {
 
     @NotNull
     @Column
-    private LocalDateTime fromDatetime;
+    private LocalDateTime startPeriod;
 
     @NotNull
     @Column
-    private LocalDateTime toDatetime;
+    private LocalDateTime endPeriod;
 
     @Column
     private String description;

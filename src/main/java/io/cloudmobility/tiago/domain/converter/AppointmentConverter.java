@@ -12,8 +12,8 @@ public class AppointmentConverter implements Converter<Appointment, AppointmentR
 
     @Override
     public AppointmentResponseDto convert(final Appointment appointment) {
-        return new AppointmentResponseDto(appointment.getFromDatetime(),
-                appointment.getToDatetime(),
+        return new AppointmentResponseDto(appointment.getStartPeriod(),
+                appointment.getEndPeriod(),
                 appointment.getPatient().getName());
     }
 }

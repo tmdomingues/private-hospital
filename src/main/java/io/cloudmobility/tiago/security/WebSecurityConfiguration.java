@@ -14,6 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import io.cloudmobility.tiago.security.jwt.JwtAuthenticationEntryPoint;
+import io.cloudmobility.tiago.security.jwt.JwtRequestFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -39,7 +42,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(final WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/authenticate", "/v3/api-docs/**", "/swagger-ui/**");
+                .antMatchers("/authenticate", "/actuator/**", "/v3/api-docs/**", "/swagger-ui/**");
     }
 
     @Override
@@ -48,8 +51,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/v1/hospital/doctors/**").hasAuthority("DOCTOR")
-                .antMatchers("/v1/hospital/patients/**").hasAuthority("PATIENT")
+                .antMatchers("/v1/hospital//doctors/*/absences", "/doctors/*/appointments").hasAuthority("DOCTOR")
+                .antMatchers("/v1/hospital/patients/**", "/v1/hospital/doctors/*/availability").hasAuthority("PATIENT")
+                .antMatchers("/v1/hospital/doctors").hasAnyAuthority("PATIENT", "DOCTOR")
+
                 .anyRequest()
                 .authenticated()
                 .and()

@@ -11,6 +11,6 @@ import io.cloudmobility.tiago.domain.model.Appointment;
 @Repository
 public interface AppointmentRepository extends PagingAndSortingRepository<Appointment, Long> {
 
-    List<Appointment> findAppointmentByDoctorIdAndFromDatetimeGreaterThanEqualAndToDatetimeLessThanEqual(
+    List<Appointment> findAppointmentByDoctorIdAndStartPeriodGreaterThanEqualAndEndPeriodLessThanEqual(
             final Long doctorId, final LocalDateTime from, final LocalDateTime to);
 }

@@ -1,10 +1,7 @@
 package io.cloudmobility.tiago.domain;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +9,7 @@ import org.springframework.stereotype.Service;
 import io.cloudmobility.tiago.domain.converter.AbsenceConverter;
 import io.cloudmobility.tiago.domain.converter.AppointmentConverter;
 import io.cloudmobility.tiago.domain.converter.DoctorConverter;
-import io.cloudmobility.tiago.domain.dto.AbsenceRequestDto;
+import io.cloudmobility.tiago.domain.dto.AbsenceDto;
 import io.cloudmobility.tiago.domain.dto.AppointmentResponseDto;
 import io.cloudmobility.tiago.domain.dto.CalendarEventDto;
 import io.cloudmobility.tiago.domain.dto.DoctorDto;
@@ -52,12 +49,16 @@ public class PrivateHospitalService {
                                                               final LocalDateTime from,
                                                               final LocalDateTime to) {
 
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("End date must be after initial date");
+        }
+
         final var doctor = doctorRepository.findById(doctorId);
 
         log.info("Searching appointments for {}:", doctor.orElseThrow().getName());
 
         final List<Appointment> appointments = appointmentRepository
-                .findAppointmentByDoctorIdAndFromDatetimeGreaterThanEqualAndToDatetimeLessThanEqual(
+                .findAppointmentByDoctorIdAndStartPeriodGreaterThanEqualAndEndPeriodLessThanEqual(
                         doctor.orElseThrow().getId(), from, to);
 
         return appointments.stream()
@@ -68,17 +69,17 @@ public class PrivateHospitalService {
     /**
      * doctor domain operation for setting time off.
      *
-     * @param doctorId          the doctor id
-     * @param absenceRequestDto request for the absence period
+     * @param doctorId   the doctor id
+     * @param absenceDto request for the absence period
      * @return the created absence
      */
-    public Absence setDoctorAbsence(final Long doctorId, final AbsenceRequestDto absenceRequestDto) {
+    public Absence setDoctorAbsence(final Long doctorId, final AbsenceDto absenceDto) {
         final var doctor = doctorRepository.findById(doctorId).orElseThrow();
 
-        checkIfNewAbsenceRequestOverlapsWithExistingAbsentPeriods(doctorId, absenceRequestDto);
+        checkIfNewAbsenceRequestOverlapsWithExistingAbsentPeriods(doctorId, absenceDto);
 
         log.info("Setting time off for doctor: {}", doctor.getName());
-        final var absence = absenceConverter.convert(absenceRequestDto);
+        final var absence = absenceConverter.convert(absenceDto);
         assert absence != null;
         absence.setDoctor(doctor);
 
@@ -90,55 +91,51 @@ public class PrivateHospitalService {
      *
      * @param doctorId the doctor id
      * @param from     start of appointment
-     * @param to       end of appointment
      * @return the appointment
      */
     public Appointment scheduleAppointment(final Long patientId,
                                            final Long doctorId,
                                            final LocalDateTime from,
-                                           final LocalDateTime to,
                                            final String description) {
 
         final var doctor = doctorRepository.findById(doctorId).orElseThrow();
         final var patient = patientRepository.findById(patientId).orElseThrow();
 
-        final var calendarEvent = new CalendarEventDto(from, to);
-        if (!calendarManager.checkIfPeriodIsWithinWeekRange(calendarEvent)) {
-            throw new IllegalArgumentException("Please select the maximum period of a week");
-        }
-
-        if (canScheduleAppointment(doctorId, from, to)) {
-            log.info("Scheduling appointment for patient {} with doctor {} " + "from {} to {}", patient, doctor, from, to);
+        if (canScheduleAppointment(doctorId, from, from.plusHours(1))) {
+            log.info("Scheduling appointment for patient {} with doctor {} " + "from {} to {}", patient, doctor, from, from.plusHours(1));
             final Appointment appointment = new Appointment();
             appointment.setDoctor(doctor);
             appointment.setPatient(patient);
-            appointment.setFromDatetime(from);
-            appointment.setToDatetime(to);
+            appointment.setStartPeriod(from);
+            appointment.setEndPeriod(from.plusHours(1));
             appointment.setDescription(description);
 
             return appointmentRepository.save(appointment);
         } else {
-            log.error("Requested timeslot is unavailable for doctor {}", doctor);
-            throw new IllegalArgumentException("Requested timeslot is unavailable for doctor");
+            throw new IllegalArgumentException("Requested timeslot is unavailable");
         }
     }
 
     private boolean canScheduleAppointment(final Long doctorId, final LocalDateTime from, final LocalDateTime to) {
 
+        if (from.isBefore(LocalDateTime.now().plusHours(1))) {
+            throw new IllegalArgumentException("Can only schedule appointments after today's date");
+        }
+
         final var desiredTimeslot = new CalendarEventDto(from, to);
 
         final var appointments = appointmentRepository
-                .findAppointmentByDoctorIdAndFromDatetimeGreaterThanEqualAndToDatetimeLessThanEqual(doctorId, from, to);
+                .findAppointmentByDoctorIdAndStartPeriodGreaterThanEqualAndEndPeriodLessThanEqual(doctorId, from, to);
 
         final var doctor = doctorRepository.findById(doctorId).orElseThrow();
         final var currentAbsences = absenceRepository.findAbsencesByDoctorForGivenPeriod(doctor, from, to);
 
-        final var appointmentsSlots = appointments.stream().map(ap -> new CalendarEventDto(ap.getFromDatetime(),
-                ap.getToDatetime())).collect(Collectors.toSet());
+        final var existingAppointments = appointments.stream().map(ap -> new CalendarEventDto(ap.getStartPeriod(),
+                ap.getEndPeriod())).collect(Collectors.toSet());
         final var existingTimeOffSlots = currentAbsences.stream().map(ab -> new CalendarEventDto(ab.getStartPeriod(),
                 ab.getEndPeriod())).collect(Collectors.toSet());
 
-        return !appointmentsSlots.contains(desiredTimeslot) && !existingTimeOffSlots.contains(desiredTimeslot);
+        return !existingAppointments.contains(desiredTimeslot) && !existingTimeOffSlots.contains(desiredTimeslot);
 
     }
 
@@ -158,7 +155,7 @@ public class PrivateHospitalService {
         }
         final var doctor = doctorRepository.findById(doctorId).orElseThrow();
         final var appointments = appointmentRepository
-                .findAppointmentByDoctorIdAndFromDatetimeGreaterThanEqualAndToDatetimeLessThanEqual(doctorId, from, to);
+                .findAppointmentByDoctorIdAndStartPeriodGreaterThanEqualAndEndPeriodLessThanEqual(doctorId, from, to);
 
         final var absences = absenceRepository.findAbsencesByDoctorForGivenPeriod(doctor, from, to);
         final var result = fetchAvailableSlots(appointments, absences, from, to);
@@ -169,12 +166,12 @@ public class PrivateHospitalService {
     private Set<CalendarEventDto> fetchAvailableSlots(final List<Appointment> appointments, final List<Absence> absences,
                                                       final LocalDateTime from, final LocalDateTime to) {
 
-        final var existingAppointments = appointments.stream().map(ap -> new CalendarEventDto(ap.getFromDatetime(),
-                ap.getToDatetime())).collect(Collectors.toSet());
+        final var existingAppointments = appointments.stream().map(ap -> new CalendarEventDto(ap.getStartPeriod(),
+                ap.getEndPeriod())).collect(Collectors.toSet());
 
         // May exist absences greater than 1h opposed to appointments that last only 1h max
-        final var absencesAs1hSlots = new HashSet<>();
-        for (final Absence absence: absences) {
+        final var absencesAs1hSlots = new HashSet<CalendarEventDto>();
+        for (final Absence absence : absences) {
             final var currentAbsences = calendarManager.extractTimeslots(new CalendarEventDto(absence.getStartPeriod(), absence.getEndPeriod()));
             absencesAs1hSlots.addAll(currentAbsences);
         }
@@ -195,15 +192,24 @@ public class PrivateHospitalService {
         return doctors;
     }
 
-    private void checkIfNewAbsenceRequestOverlapsWithExistingAbsentPeriods(final Long doctorId, final AbsenceRequestDto absenceRequesDto) {
+    private void checkIfNewAbsenceRequestOverlapsWithExistingAbsentPeriods(final Long doctorId, final AbsenceDto absenceRequesDto) {
         log.info("Checking for available periods between {} and {}", absenceRequesDto.getFrom(), absenceRequesDto.getTo());
 
         final var doctor = doctorRepository.findById(doctorId).orElseThrow();
-        final var slots = absenceRepository.findAbsencesByDoctorForGivenPeriod(doctor, absenceRequesDto.getFrom(), absenceRequesDto.getTo());
+        final var existingAbsences = absenceRepository.findAbsencesByDoctorForGivenPeriod(doctor, absenceRequesDto.getFrom(), absenceRequesDto.getTo());
+        final var collectedAbsences = existingAbsences.stream().map(absenceConverter::convertToDto).collect(Collectors.toSet());
 
-        // TODO Revisit existing absence scheduling
-        if (!slots.isEmpty()) {
-            throw new IllegalArgumentException("Defined time off overlaps with existing period");
+        final var eventsToSet = calendarManager.extractTimeslots(absenceRequesDto);
+
+        final var existingEvents = new LinkedHashSet<>();
+        for (final AbsenceDto dto : collectedAbsences) {
+            existingEvents.addAll(calendarManager.extractTimeslots(dto));
+        }
+
+        final var disjointed = !Collections.disjoint(existingEvents, eventsToSet);
+
+        if (disjointed) {
+            throw new IllegalArgumentException("Defined time off overlaps with one existing period");
         }
     }
 

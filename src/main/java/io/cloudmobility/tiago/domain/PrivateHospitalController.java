@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.cloudmobility.tiago.domain.dto.AbsenceRequestDto;
+import io.cloudmobility.tiago.domain.dto.AbsenceDto;
 import io.cloudmobility.tiago.domain.dto.AppointmentResponseDto;
 import io.cloudmobility.tiago.domain.dto.CalendarEventDto;
 import io.cloudmobility.tiago.domain.dto.DoctorDto;
@@ -26,8 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-@Tag(name = "PrivateHospitalController", description = "Controller to manage hospital operations")
+@Tag(name = "PrivateHospital", description = "Manage hospital operations")
 @RestController
+
 @RequestMapping(path = "/v1/hospital", produces = "application/json")
 public class PrivateHospitalController {
 
@@ -39,11 +40,11 @@ public class PrivateHospitalController {
 
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("/doctors/{id}/appointments")
-    @Operation(summary = "Get a list of a doctor's appointments")
+    @Operation(summary = "List a doctor's appointments (doctor)")
     public List<AppointmentResponseDto> getDoctorAppointments(
             @Parameter(name = "id", example = "1") @PathVariable(value = "id") final Long id,
-            @Parameter(name = "from", example = "2021-03-09 17:00") @RequestParam(value = "from") final String from,
-            @Parameter(name = "to", example = "2021-03-09 20:00") @RequestParam(value = "to") final String to,
+            @Parameter(name = "from", example = "2021-03-26 17:00") @RequestParam(value = "from") final String from,
+            @Parameter(name = "to", example = "2021-03-26 20:00") @RequestParam(value = "to") final String to,
             @Parameter(name = "pageable", example = "{\"page\": 0,\"size\": 10}") final Pageable pageable) {
 
         final var fromDateTime = LocalDateTime.parse(from, DATE_FORMATTER);
@@ -53,10 +54,10 @@ public class PrivateHospitalController {
     }
 
     @PostMapping("/doctors/{id}/absences")
-    @Operation(summary = "Set a doctor's time off")
+    @Operation(summary = "Set a doctor's absence (doctor)")
     public ResponseEntity<Absence> setDoctorAbsence(
             @Parameter(name = "id", example = "1") @PathVariable(value = "id") final Long id,
-            @RequestBody @Valid final AbsenceRequestDto absenceReqDto) {
+            @RequestBody @Valid final AbsenceDto absenceReqDto) {
 
         final Absence absence = privateHospitalService.setDoctorAbsence(id, absenceReqDto);
 
@@ -68,7 +69,7 @@ public class PrivateHospitalController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("/doctors/{id}/availability")
-    @Operation(summary = "Get a doctor's availability for a given week")
+    @Operation(summary = "Doctor's availability for a given week (patient)")
     public Page<CalendarEventDto> getDoctorAvailability(
             @Parameter(name = "id", example = "1") @PathVariable(value = "id") final Long id,
             @Parameter(name = "from", example = "2021-03-22 18:00") @RequestParam(value = "from") final String from,
@@ -89,25 +90,23 @@ public class PrivateHospitalController {
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("/patients/{id}/appointments")
-    @Operation(summary = "Schedule an appointment with the chosen doctor")
+    @Operation(summary = "Schedule an appointment with the chosen doctor (patient)")
     public Appointment scheduleAppointment(
-            @Parameter(name = "id", example = "4") @PathVariable(value = "id") final Long id,
+            @Parameter(name = "id", example = "3") @PathVariable(value = "id") final Long id,
             @Parameter(name = "doctorId", example = "3") @RequestParam(value = "doctorId") final Long doctorId,
             @Parameter(name = "from", example = "2021-03-25 14:00") @RequestParam(value = "from") final String from,
-            @Parameter(name = "to", example = "2021-03-25 15:00") @RequestParam(value = "to") final String to,
             @Parameter(name = "description", example = "Follow up") @RequestParam(value = "description", required = false) final String description) {
 
         final var initDate = LocalDateTime.parse(from, DATE_FORMATTER);
-        final var endDate = LocalDateTime.parse(to, DATE_FORMATTER);
 
-        return privateHospitalService.scheduleAppointment(id, doctorId, initDate, endDate, description);
+        return privateHospitalService.scheduleAppointment(id, doctorId, initDate, description);
     }
 
-    /** Bonus endpoint for conveniency of testing. */
+    /** Additional endpoint for ease of testing. */
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("/doctors")
-    @Operation(summary = "List the hospital doctors")
+    @Operation(summary = "List the hospital doctors (both)")
     public List<DoctorDto> getDoctors() {
         return privateHospitalService.getDoctors();
     }

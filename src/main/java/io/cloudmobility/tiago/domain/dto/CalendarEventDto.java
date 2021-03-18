@@ -14,10 +14,10 @@ import lombok.Data;
 public class CalendarEventDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    @Schema(description = "Beginning of available slot", type = "string", example = "2021-03-22 18:00")
+    @Schema(description = "Beginning of available slot", type = "string", example = "2021-03-22T18:00")
     private LocalDateTime from;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    @Schema(description = "End of available slot", type = "string", example = "2021-03-24 10:00")
+    @Schema(description = "End of available slot", type = "string", example = "2021-03-24T10:00")
     private LocalDateTime to;
 }

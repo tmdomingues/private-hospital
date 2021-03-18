@@ -29,14 +29,20 @@ class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleIllegalArgumentException(final RuntimeException ex) {
-        log.error(ex.getMessage());
-        return new ResponseEntity(new JsonErrorPayload(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        final String customMsg;
+        if (ex.getMessage().contains("fromIndex")) {
+            customMsg = "Pagination out of bounds error: " + ex.getMessage();
+        } else {
+            customMsg = ex.getMessage();
+        }
+        log.error(customMsg);
+        return new ResponseEntity(new JsonErrorPayload(customMsg), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DateTimeParseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleDateTimeParseException(final RuntimeException ex) {
-        final var customMessage = ex.getMessage() + ". Expected pattern: 'yyyy-MM-ddTHH:mm'";
+        final var customMessage = "Failed to deserialize date. Expected pattern: 'yyyy-MM-ddTHH:mm'";
         log.error(customMessage);
         return new ResponseEntity(new JsonErrorPayload(customMessage), HttpStatus.INTERNAL_SERVER_ERROR);
     }

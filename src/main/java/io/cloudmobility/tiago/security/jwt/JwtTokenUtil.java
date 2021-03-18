@@ -1,4 +1,4 @@
-package io.cloudmobility.tiago.security;
+package io.cloudmobility.tiago.security.jwt;
 
 import java.io.Serializable;
 import java.util.Date;

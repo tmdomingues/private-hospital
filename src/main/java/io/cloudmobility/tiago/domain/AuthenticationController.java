@@ -12,22 +12,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.cloudmobility.tiago.security.JwtRequestDto;
-import io.cloudmobility.tiago.security.JwtResponseDto;
-import io.cloudmobility.tiago.security.JwtTokenUtil;
-import io.cloudmobility.tiago.security.JwtUserDetailsService;
+import io.cloudmobility.tiago.security.jwt.JwtRequestDto;
+import io.cloudmobility.tiago.security.jwt.JwtResponseDto;
+import io.cloudmobility.tiago.security.jwt.JwtTokenUtil;
+import io.cloudmobility.tiago.security.jwt.JwtUserDetailsService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @CrossOrigin
-@Tag(name = "AuthenticationController", description = "Controller to obtain token for authentication")
+@Tag(name = "Authentication", description = "Manage authentication operations")
 @RestController
-public class JwtAuthenticationController {
+public class AuthenticationController {
 
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private JwtTokenUtil jwtTokenUtil;
     @Autowired private JwtUserDetailsService userDetailsService;
 
     @PostMapping(value = "/authenticate")
+    @Operation(summary = "Obtain Jwt token for rights to invoke the API")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody final JwtRequestDto authenticationRequest) throws Exception {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
