@@ -18,7 +18,6 @@
     <properties>
         <java.version>11</java.version>
         <springdoc-openapi.version>1.5.5</springdoc-openapi.version>
-        <hibernate-types.version>2.10.2</hibernate-types.version>
 
         <deploy.path>v1</deploy.path>
     </properties>
@@ -109,6 +108,18 @@
 
     <build>
         <plugins>
+            <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>io.cloudmobility.tiago.PrivateHospitalApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

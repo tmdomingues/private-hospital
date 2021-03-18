@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS appointments (
     id bigserial NOT NULL,
     doctor_id bigserial,
     patient_id bigserial,
-    from_datetime timestamp NOT NULL,
-	to_datetime timestamp NOT NULL,
+    start_period timestamp NOT NULL,
+	end_period timestamp NOT NULL,
 	description varchar (255),
     CONSTRAINT appointments_pk PRIMARY KEY (id),
     CONSTRAINT fk_doctor
