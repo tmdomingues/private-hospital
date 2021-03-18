@@ -56,6 +56,7 @@ As a doctor :man_health_worker::
 2. Set an absence for a given period: POST /v1/hospital/doctors/{id}/absences :white_check_mark:
 
 *Note:* All the scenarios above were tested successfully, even on the trickier settings i could think of.
+There were some decisions i made thinking probably when plugging it to a frontend(e.g. i limited the patients to check availabilities in periods of a week)
 
 ### Tested scenarios for security roles
 
