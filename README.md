@@ -20,7 +20,7 @@ The service exposes a RESTful API to answer the following questions:
    
 To stop the application run *docker-compose down* (with flag -v if we want to erase the database's persistent storage also).
 
-3. The application already is pre loaded with somy dummy data (doctors and patients).
+3. The application already is pre loaded with some dummy data (doctors and patients).
 
 4. Use the application's through the REST API located at ---> [Private-Hospital Swagger API](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/)
 
